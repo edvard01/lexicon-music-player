@@ -1,0 +1,98 @@
+@media only screen and (max-width: 440px) {
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .playing-box {
+    display: grid;
+    grid-template-columns: 1fr 6fr 1fr;
+    grid-template-rows: 4fr 1fr 1fr 1fr;
+    background-color: rgb(40, 26, 63);
+    width: 100%;
+    border-bottom-style: solid;
+    border-color: black;
+    border-width: 0.1px;
+  }
+
+  .currently-playing-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-column: 2/2;
+    grid-row: 1/1;
+  }
+
+  .currently-playing-img img {
+    width: 90%;
+    height: 75%;
+    border: solid;
+    border-color: rgb(0, 0, 0);
+  }
+
+  .currently-playing-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    grid-column: 2/2;
+    grid-row: 2/2;
+  }
+
+  .currently-playing-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    grid-column: 2/2;
+    grid-row: 3/3;
+  }
+
+  .progress-bar {
+    width: 80%;
+    border-radius: 10px;
+    color: rgb(109, 109, 109);
+    background-color: rgb(109, 109, 109);
+  }
+
+  .currently-playing-nav-section {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    grid-column: 2/2;
+    grid-row: 4/4;
+  }
+
+  .currently-playing-nav-section span {
+    font-size: 52px;
+  }
+
+  .material-icons {
+    color: white;
+  }
+
+  .playlist {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .song {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 64px;
+    padding: 8px;
+    background-color: rgb(40, 26, 63);
+    justify-content: space-between;
+    border-bottom-style: solid;
+    border-right-style: none;
+    border-color: black;
+    border-width: thin;
+  }
+}
