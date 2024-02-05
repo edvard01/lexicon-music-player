@@ -10,6 +10,7 @@ const songs = [
 const pause = "pause_circle";
 const play = "play_circle";
 let progressBarInterval;
+let currentSongIndex = 0;
 
 const songObjects = [];
 
@@ -34,9 +35,13 @@ const songStateIcon = document.querySelector(".currently-playing-nav-section")
 const progressBar = document.querySelector(".progress-bar");
 const progressBarFill = document.querySelector(".progress-bar-fill");
 const progressBarText = document.querySelector(".duration").children;
+const nextSong = document.querySelector("#next-song");
+const lastSong = document.querySelector("#last-song");
 
 setupSongs();
 displayAlbum(songObjects);
+
+const mutablePlaylist = songObjects;
 
 function displayAlbum(songs) {
   let counter = 0;
@@ -61,22 +66,53 @@ playlist.addEventListener("click", (e) => {
 
 songStateIcon.addEventListener("click", (e) => {
   if (songStateIcon.innerHTML === "pause_circle") {
-    audio.pause();
     clearInterval(progressBarInterval);
+    audio.pause();
     songStateIcon.innerHTML = play;
   } else {
-    audio.play();
-    songStateIcon.innerHTML = pause;
-    progressBarInterval = setInterval(drawProgressBar, 1000);
+    if (isNaN(audio.duration)) {
+      playSong(currentSongIndex);
+    } else {
+      progressBarInterval = setInterval(drawProgressBar, 50);
+      audio.play();
+      songStateIcon.innerHTML = pause;
+    }
   }
 });
 
 progressBar.addEventListener("click", (e) => {
-  console.log(e.target.style.offsetX);
+  if (!isNaN(audio.duration)) {
+    const elementWidth = e.currentTarget.offsetWidth;
+    const clickX = e.clientX - e.currentTarget.getBoundingClientRect().left;
+    const clickPosition = (clickX / elementWidth) * elementWidth;
+    audio.currentTime = audio.duration * (clickPosition / elementWidth);
+  }
+});
+
+progressBarFill.addEventListener("click", (e) => {
+  if (!isNaN(audio.duration)) {
+    const elementWidth = 250;
+    const clickX = e.clientX - e.currentTarget.getBoundingClientRect().left;
+    const clickPosition = (clickX / elementWidth) * elementWidth;
+    audio.currentTime = audio.duration * (clickPosition / elementWidth);
+  }
+});
+
+audio.addEventListener("ended", (e) => {
+  playNextSong();
+});
+
+nextSong.addEventListener("click", (e) => {
+  playNextSong();
+});
+
+lastSong.addEventListener("click", (e) => {
+  playLastSong();
 });
 
 function playSong(index) {
-  let currentSong = songObjects[index];
+  currentSongIndex = index;
+  let currentSong = mutablePlaylist[index];
   audio.src = currentSong.path;
   currentlyPlayingImg.src = currentSong.albumCover;
   currentlyPlayingText.children[0].innerHTML = currentSong.title;
@@ -84,7 +120,30 @@ function playSong(index) {
   songStateIcon.innerHTML = pause;
   audio.play();
   drawProgressBar();
-  progressBarInterval = setInterval(drawProgressBar, 5);
+  progressBarInterval = setInterval(drawProgressBar, 50);
+}
+
+function playNextSong() {
+  currentSongIndex++;
+  if (currentSongIndex > mutablePlaylist.length - 1) {
+    currentSongIndex = 0;
+  }
+
+  playSong(currentSongIndex);
+}
+
+function playLastSong() {
+  if (audio.currentTime > 5) {
+    audio.currentTime = 0;
+    drawProgressBar();
+  } else {
+    currentSongIndex--;
+    if (currentSongIndex < 0) {
+      currentSongIndex = songObjects.length - 1;
+    }
+
+    playSong(currentSongIndex);
+  }
 }
 
 function drawProgressBar() {
@@ -92,11 +151,12 @@ function drawProgressBar() {
   let length = audio.duration;
   let lengthProcent = currentTime / length;
   let width = 250 * lengthProcent;
-  console.log(progressBarFill);
 
   progressBarFill.style.width = `${width}px`;
   progressBarText[0].innerHTML = formatTime(currentTime);
-  progressBarText[1].innerHTML = formatTime(audio.duration);
+  if (!isNaN(audio.duration)) {
+    progressBarText[1].innerHTML = formatTime(audio.duration);
+  }
 }
 
 function formatTime(seconds) {
