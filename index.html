@@ -27,9 +27,12 @@
         <span class="material-icons"> favorite </span>
       </article>
       <article class="currently-playing-progress">
-        <p>0:00</p>
-        <span class="progress-bar">-</span>
-        <p>4:48</p>
+        <div class="progress-bar"></div>
+        <div class="progress-bar-fill"></div>
+        <span class="duration"
+          ><p>0:00</p>
+          <p>4:48</p></span
+        >
       </article>
       <article class="currently-playing-nav-section">
         <span class="material-icons"> repeat </span>
@@ -40,6 +43,7 @@
       </article>
     </div>
     <div class="playlist"></div>
+    <audio id="audio-player" src=""></audio>
     <script src="index.js"></script>
   </body>
 </html>

@@ -7,6 +7,10 @@ const songs = [
   "assets/songs/Time_of_sins_-_Avenger_Kills.mp3",
 ];
 
+const pause = "pause_circle";
+const play = "play_circle";
+let progressBarInterval;
+
 const songObjects = [];
 
 class Song {
@@ -20,14 +24,25 @@ class Song {
 }
 
 const playlist = document.querySelector(".playlist");
+const audio = document.querySelector("#audio-player");
+const currentlyPlayingImg = document.querySelector(".currently-playing-img")
+  .children[0];
+const currentlyPlayingText = document.querySelector(".currently-playing-info")
+  .children[1];
+const songStateIcon = document.querySelector(".currently-playing-nav-section")
+  .children[2];
+const progressBar = document.querySelector(".progress-bar");
+const progressBarFill = document.querySelector(".progress-bar-fill");
+const progressBarText = document.querySelector(".duration").children;
 
 setupSongs();
 displayAlbum(songObjects);
 
 function displayAlbum(songs) {
+  let counter = 0;
   for (const song of songs) {
     let html =
-      `<article class="song">` +
+      `<article class="song" id="${counter}">` +
       `<img src="${song.albumCover}" alt="album"/>` +
       `<div class="song-text">` +
       `<h3>${song.title}</h3>` +
@@ -35,7 +50,63 @@ function displayAlbum(songs) {
       `</div>` +
       `</article>`;
     playlist.innerHTML += html;
+    counter++;
   }
+}
+
+playlist.addEventListener("click", (e) => {
+  let index = e.target.closest(".song").id;
+  playSong(index);
+});
+
+songStateIcon.addEventListener("click", (e) => {
+  if (songStateIcon.innerHTML === "pause_circle") {
+    audio.pause();
+    clearInterval(progressBarInterval);
+    songStateIcon.innerHTML = play;
+  } else {
+    audio.play();
+    songStateIcon.innerHTML = pause;
+    progressBarInterval = setInterval(drawProgressBar, 1000);
+  }
+});
+
+progressBar.addEventListener("click", (e) => {
+  console.log(e.target.style.offsetX);
+});
+
+function playSong(index) {
+  let currentSong = songObjects[index];
+  audio.src = currentSong.path;
+  currentlyPlayingImg.src = currentSong.albumCover;
+  currentlyPlayingText.children[0].innerHTML = currentSong.title;
+  currentlyPlayingText.children[1].innerHTML = currentSong.author;
+  songStateIcon.innerHTML = pause;
+  audio.play();
+  drawProgressBar();
+  progressBarInterval = setInterval(drawProgressBar, 5);
+}
+
+function drawProgressBar() {
+  let currentTime = audio.currentTime;
+  let length = audio.duration;
+  let lengthProcent = currentTime / length;
+  let width = 250 * lengthProcent;
+  console.log(progressBarFill);
+
+  progressBarFill.style.width = `${width}px`;
+  progressBarText[0].innerHTML = formatTime(currentTime);
+  progressBarText[1].innerHTML = formatTime(audio.duration);
+}
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+
+  const formattedMinutes = String(minutes).padStart(2, "0");
+  const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+
+  return `${formattedMinutes}:${formattedSeconds}`;
 }
 
 function setupSongs() {
