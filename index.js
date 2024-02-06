@@ -15,12 +15,13 @@ let currentSongIndex = 0;
 const songObjects = [];
 
 class Song {
-  constructor(path, title, author, album, albumCover) {
+  constructor(path, title, author, album, albumCover, id) {
     this.path = path;
     this.title = title;
     this.author = author;
     this.album = album;
     this.albumCover = albumCover;
+    this.id = id;
   }
 }
 
@@ -44,10 +45,9 @@ displayAlbum(songObjects);
 const mutablePlaylist = songObjects;
 
 function displayAlbum(songs) {
-  let counter = 0;
   for (const song of songs) {
     let html =
-      `<article class="song" id="${counter}">` +
+      `<article class="song" id="${song.id}">` +
       `<img src="${song.albumCover}" alt="album"/>` +
       `<div class="song-text">` +
       `<h3>${song.title}</h3>` +
@@ -55,13 +55,12 @@ function displayAlbum(songs) {
       `</div>` +
       `</article>`;
     playlist.innerHTML += html;
-    counter++;
   }
 }
 
 playlist.addEventListener("click", (e) => {
   let index = e.target.closest(".song").id;
-  playSong(index);
+  playSong(index - 1);
 });
 
 songStateIcon.addEventListener("click", (e) => {
@@ -121,6 +120,7 @@ function playSong(index) {
   audio.play();
   drawProgressBar();
   progressBarInterval = setInterval(drawProgressBar, 50);
+  addPlayingStyling(currentSong);
 }
 
 function playNextSong() {
@@ -159,6 +159,20 @@ function drawProgressBar() {
   }
 }
 
+function addPlayingStyling(song) {
+  const listItem = document.getElementById(`${song.id}`);
+  if (song.id === 1) {
+    const lastListItem = document.getElementById(`${songObjects.length}`);
+    console.log(lastListItem);
+    lastListItem.classList.remove("playing");
+  } else {
+    const lastListItem = document.getElementById(`${song.id - 1}`);
+    console.log(lastListItem);
+    lastListItem.classList.remove("playing");
+  }
+  listItem.classList.add("playing");
+}
+
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
@@ -176,7 +190,8 @@ function setupSongs() {
       "The End Has Come",
       "Avenger Kills",
       "The End Has Come",
-      "assets/album-cover/theendhascome.jpg"
+      "assets/album-cover/theendhascome.jpg",
+      1
     )
   );
   songObjects.push(
@@ -185,7 +200,8 @@ function setupSongs() {
       "When I Fall",
       "Avenger Kills",
       "The End Has Come",
-      "assets/album-cover/theendhascome.jpg"
+      "assets/album-cover/theendhascome.jpg",
+      2
     )
   );
   songObjects.push(
@@ -194,7 +210,8 @@ function setupSongs() {
       "The Fears",
       "Avenger Kills",
       "The End Has Come",
-      "assets/album-cover/theendhascome.jpg"
+      "assets/album-cover/theendhascome.jpg",
+      3
     )
   );
   songObjects.push(
@@ -203,7 +220,8 @@ function setupSongs() {
       "Law abiding citizen",
       "Avenger Kills",
       "The Savior",
-      "assets/album-cover/thesavior.jpg"
+      "assets/album-cover/thesavior.jpg",
+      4
     )
   );
   songObjects.push(
@@ -212,7 +230,8 @@ function setupSongs() {
       "The savior",
       "Avenger Kills",
       "The Savior",
-      "assets/album-cover/thesavior.jpg"
+      "assets/album-cover/thesavior.jpg",
+      5
     )
   );
   songObjects.push(
@@ -221,7 +240,8 @@ function setupSongs() {
       "Time of sins",
       "Avenger Kills",
       "The Savior",
-      "assets/album-cover/thesavior.jpg"
+      "assets/album-cover/thesavior.jpg",
+      6
     )
   );
 }

@@ -123,6 +123,10 @@
     border-width: thin;
   }
 
+  .playing {
+    background-color: rgb(56, 45, 75);
+  }
+
   .song > img {
     margin-left: 8px;
     height: 64px;
