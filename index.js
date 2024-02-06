@@ -11,6 +11,7 @@ const pause = "pause_circle";
 const play = "play_circle";
 let progressBarInterval;
 let currentSongIndex = 0;
+let lastPlayedSongId = 0;
 
 const songObjects = [];
 
@@ -38,11 +39,12 @@ const progressBarFill = document.querySelector(".progress-bar-fill");
 const progressBarText = document.querySelector(".duration").children;
 const nextSong = document.querySelector("#next-song");
 const lastSong = document.querySelector("#last-song");
+const shuffle = document.querySelector("#shuffle");
 
 setupSongs();
 displayAlbum(songObjects);
 
-const mutablePlaylist = songObjects;
+let mutablePlaylist = songObjects;
 
 function displayAlbum(songs) {
   for (const song of songs) {
@@ -109,8 +111,14 @@ lastSong.addEventListener("click", (e) => {
   playLastSong();
 });
 
+shuffle.addEventListener("click", (e) => {
+  mutablePlaylist = shufflePlaylist(mutablePlaylist);
+  console.log(mutablePlaylist);
+});
+
 function playSong(index) {
   currentSongIndex = index;
+  console.log(index);
   let currentSong = mutablePlaylist[index];
   audio.src = currentSong.path;
   currentlyPlayingImg.src = currentSong.albumCover;
@@ -121,6 +129,7 @@ function playSong(index) {
   drawProgressBar();
   progressBarInterval = setInterval(drawProgressBar, 50);
   addPlayingStyling(currentSong);
+  lastPlayedSongId = currentSong.id;
 }
 
 function playNextSong() {
@@ -139,7 +148,7 @@ function playLastSong() {
   } else {
     currentSongIndex--;
     if (currentSongIndex < 0) {
-      currentSongIndex = songObjects.length - 1;
+      currentSongIndex = mutablePlaylist.length - 1;
     }
 
     playSong(currentSongIndex);
@@ -161,12 +170,8 @@ function drawProgressBar() {
 
 function addPlayingStyling(song) {
   const listItem = document.getElementById(`${song.id}`);
-  if (song.id === 1) {
-    const lastListItem = document.getElementById(`${songObjects.length}`);
-    console.log(lastListItem);
-    lastListItem.classList.remove("playing");
-  } else {
-    const lastListItem = document.getElementById(`${song.id - 1}`);
+  if (lastPlayedSongId !== 0) {
+    const lastListItem = document.getElementById(`${lastPlayedSongId}`);
     console.log(lastListItem);
     lastListItem.classList.remove("playing");
   }
@@ -181,6 +186,19 @@ function formatTime(seconds) {
   const formattedSeconds = String(remainingSeconds).padStart(2, "0");
 
   return `${formattedMinutes}:${formattedSeconds}`;
+}
+
+function shufflePlaylist(playlist) {
+  let tempPlaylist = playlist;
+  let array = [];
+  let length = tempPlaylist.length;
+  for (let i = 0; i < length; i++) {
+    let index = Math.floor(Math.random() * tempPlaylist.length);
+    array.push(playlist[index]);
+    tempPlaylist.splice(index, 1);
+  }
+
+  return array;
 }
 
 function setupSongs() {
